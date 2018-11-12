@@ -27,6 +27,7 @@ public class TooltipView extends DemoView {
         createDisabledTooltipExample();
         createOpenCloseTooltipExample();
         createOnClickTooltipExample();
+        createDetachedTooltipExample();
     }
 
     private void createBasicExample() {
@@ -42,7 +43,7 @@ public class TooltipView extends DemoView {
         tooltip.add(new H5("Hello"));
         tooltip.add(new Paragraph("This is an example of how to use it"));
 
-        addCard("Tooltip basic example", button, tooltip);
+        addCard("Tooltip basic example", button);
     }
 
     private void createDisabledTooltipExample() {
@@ -62,7 +63,7 @@ public class TooltipView extends DemoView {
             tooltip.setEnabled(!tooltip.isEnabled());
         });
 
-        addCard("Tooltip disable/disable example", button, tooltip);
+        addCard("Tooltip disable/disable example", button);
     }
 
     private void createOpenCloseTooltipExample() {
@@ -91,14 +92,14 @@ public class TooltipView extends DemoView {
         });
 
         tooltip.setManualMode(true);
-        addCard("Opening and closing a tooltip programmatically", button, tooltip, new Div(open, close));
+        addCard("Opening and closing a tooltip programmatically", button, new Div(open, close));
     }
 
     private void createOnClickTooltipExample() {
         Button button = new Button("Hover on me");
         Tooltip tooltip = new Tooltip();
 
-        tooltip.attachToComponent(button);
+        tooltip.attachToComponent(button,false);
 
         tooltip.setPosition(TooltipPosition.RIGHT);
         tooltip.setAlignment(TooltipAlignment.LEFT);
@@ -126,11 +127,35 @@ public class TooltipView extends DemoView {
 
                 tooltip.add(new Paragraph("Position: " + position.getPositionText()));
                 tooltip.add(new Paragraph("Alignment: " + alignment.getAlignmentText()));
-                horizontalLayout.add(button, tooltip);
+                horizontalLayout.add(button);
             }
             verticalLayout.add(horizontalLayout);
         }
 
         addCard("All Tooltip's Positions and Alignments", verticalLayout);
+    }
+
+
+    private void createDetachedTooltipExample() {
+        Paragraph paragraph = new Paragraph("When the remove button is clicked" +
+                " the tooltip is detached/removed automatically.");
+        Button button = new Button("Hover on me");
+        Tooltip tooltip = new Tooltip();
+
+        tooltip.attachToComponent(button);
+
+        tooltip.setPosition(TooltipPosition.RIGHT);
+        tooltip.setAlignment(TooltipAlignment.LEFT);
+
+        tooltip.add(new H5("Hello"));
+        tooltip.add(new Paragraph("This is an example of how to use it"));
+
+        Button remove = new Button("remove Btn");
+
+        Div div = new Div(button,remove);
+
+        remove.addClickListener(event -> div.remove(button));
+
+        addCard("Tooltip basic example", paragraph,div);
     }
 }

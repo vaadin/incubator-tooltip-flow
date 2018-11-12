@@ -52,11 +52,12 @@ public class Tooltip extends Component implements HasComponents, HasStyle {
         }
     }
 
-    private final String ATTACHED_COMPONENT_ID_PROPERTY = "for";
     private final String POSITION_PROPERTY = "position";
     private final String ALIGNMENT_PROPERTY = "align";
     private final String HIDDEN_MSG_PROPERTY = "hidden";
     private final String MANUAL_PROPERTY = "manual";
+
+    private Registration detachedRegistration;
 
     /**
      * Default constructor.
@@ -67,6 +68,8 @@ public class Tooltip extends Component implements HasComponents, HasStyle {
 
     /**
      * Creates the tooltip attaching it to the component.
+     * <p>
+     * The tooltip is automatically appended to the component's parent.
      *
      * @param component the tooltip is attached to this component
      */
@@ -77,6 +80,8 @@ public class Tooltip extends Component implements HasComponents, HasStyle {
 
     /**
      * Creates the tooltip attaching it to the component and sets its position.
+     * <p>
+     * The tooltip is automatically appended to the component's parent.
      *
      * @param component the tooltip is attached to this component
      * @param position  The position of the tooltip {@link TooltipPosition}
@@ -89,6 +94,8 @@ public class Tooltip extends Component implements HasComponents, HasStyle {
     /**
      * Creates the tooltip attaching it to the component. It also sets its position
      * and its alignment.
+     * <p>
+     * The tooltip is automatically appended to the component's parent.
      *
      * @param component the tooltip is attached to this component
      * @param position  The position of the tooltip {@link TooltipPosition}
@@ -101,26 +108,51 @@ public class Tooltip extends Component implements HasComponents, HasStyle {
 
     /**
      * Assigns the tooltip to a specific component.
+     * <p>
+     * The tooltip is automatically appended to the component's parent.
+     * <p>
+     * The tooltip is removed from the parent after the component that the tooltip is
+     * attached is detached.
      *
      * @param component the tooltip is attached to this component
      */
-    public void attachToComponent(Component component) {
-        Objects.requireNonNull(component);
-
-        getElement().getNode().runWhenAttached(ui ->
-                ui.getPage().executeJavaScript("$0.targetElement = $1;",
-                        getElement(), component.getElement()
-                ));
+    public void attachToComponent(Component component){
+        attachToComponent(component,true);
     }
 
     /**
-     * Assigns the tooltip to a component with an specific id.
+     * Assigns the tooltip to a specific component.
+     * <p>
+     * The tooltip is removed from the parent after the component that the tooltip is
+     * attached is detached.
      *
-     * @param id the id of the component that we want to attach.
+     * @param component the tooltip is attached to this component
+     * @param appended <code>true</code> the tooltip is automatically appended
+     *                 to the component's father.<code>false</code>,
+     *                 it is not appended. It should be added to a layout manually.
      */
-    public void attachToComponent(String id) {
-        Objects.requireNonNull(id);
-        getElement().setProperty(ATTACHED_COMPONENT_ID_PROPERTY, id);
+    public void attachToComponent(Component component, boolean appended) {
+        Objects.requireNonNull(component);
+
+        getElement().getNode().runWhenAttached(ui -> {
+            ui.getPage().executeJavaScript("$0.targetElement = $1;",
+                    getElement(), component.getElement()
+            );
+        });
+
+        if ( appended ){
+            component.getElement().getNode().runWhenAttached(ui -> {
+                component.getElement().getParentNode().appendChild(getElement());
+            });
+        }
+
+        if ( detachedRegistration != null ){
+            detachedRegistration.remove();
+        }
+
+        detachedRegistration = component.addDetachListener(event -> {
+            this.getElement().removeFromParent();
+        });
     }
 
     /**

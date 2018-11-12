@@ -53,6 +53,14 @@ tooltip.addClickListener(event -> {
 });
 ```
 
+## Notes about `attachToComponent` method
+
+In the new tooltip's version, `attachToComponent` will append automatically the component to the component's parent.
+A tooltip can be appended manually, specifying `attachToComponent(component,false)`
+
+In the old tooltip's version, it has to be added always manually to the to the component's parent.
+e.g `layout.add(btn,tooltip)`.
+
 # How to run the demo?
 
 The Demo can be run going to the project incubator-tooltip-flow-vaadincom-demo and executing the maven goal:
