@@ -1,3 +1,7 @@
+# Deprecated 
+This repository has been deprecated. Please find the latest code here: 
+https://github.com/vaadin-component-factory/tooltip
+
 # Incubator Tooltip for Flow
 
 [Live Demo ↗](https://incubator.app.fi/incubator-tooltip-demo/)
